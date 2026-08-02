@@ -147,7 +147,7 @@ func writePEM(path string, mode os.FileMode, block *pem.Block) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	return pem.Encode(f, block)
 }
 

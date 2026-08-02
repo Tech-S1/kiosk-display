@@ -1,6 +1,6 @@
 module github.com/Tech-S1/kiosk-display
 
-go 1.26
+go 1.26.5
 
 require (
 	github.com/chromedp/cdproto v0.0.0-20260714215040-dc233986426f
@@ -8,7 +8,7 @@ require (
 	github.com/go-playground/mold/v4 v4.5.1
 	github.com/go-playground/validator/v10 v10.26.0
 	github.com/gorilla/websocket v1.5.3
-	golang.org/x/crypto v0.33.0
+	golang.org/x/crypto v0.50.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -26,7 +26,7 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/segmentio/go-camelcase v0.0.0-20160726192923-7085f1e3c734 // indirect
 	github.com/segmentio/go-snakecase v1.2.0 // indirect
-	golang.org/x/net v0.34.0 // indirect
+	golang.org/x/net v0.53.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/text v0.39.0 // indirect
 )
