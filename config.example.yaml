@@ -1,0 +1,29 @@
+manager:
+  bind: 0.0.0.0
+  host: 127.0.0.1
+  port: 8443
+  password_hash: "run: go run ./cmd/kiosk-display -hash-password 'your-password'"
+display:
+  port: 8081
+  sleep:
+    - [xset, dpms, force, off]
+  wake:
+    - [xset, dpms, force, on]
+    - [xset, -dpms]
+chrome:
+  path: /usr/bin/chromium
+  display: ":0"
+  width: 1920
+  height: 1080
+  restart: 2s
+links:
+  - label: Example
+    url: https://example.com/
+  - label: Google
+    url: https://www.google.com/
+allow_edit_links: false
+allowed_hosts:
+  - example.com
+  - www.google.com
+auto_allow_link_hosts: false
+auto_allow_subdomains: false

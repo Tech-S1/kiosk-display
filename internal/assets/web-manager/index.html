@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kiosk · Manage</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div id="login" hidden>
+    <h1>Kiosk Display Manager</h1>
+    <p class="muted">Sign in to continue</p>
+    <div class="field-row">
+      <input id="login-password" type="password" placeholder="Password" autocomplete="current-password" />
+      <button type="button" class="primary" id="login-submit">Sign in</button>
+    </div>
+    <div class="status" id="login-status"></div>
+  </div>
+
+  <main id="app" hidden>
+    <header>
+      <h1>Kiosk Display Manager</h1>
+      <div class="power">
+        <button type="button" id="wake">Wake</button>
+        <button type="button" id="sleep">Sleep</button>
+        <button type="button" id="logout">Logout</button>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <button type="button" class="active" data-tab="control" id="tab-control">Control</button>
+      <button type="button" data-tab="audit" id="tab-audit">Audit log</button>
+    </div>
+
+    <div class="panel" id="panel-control">
+    <section>
+      <div class="screen-wrap" id="screen-wrap">
+        <img id="screen" alt="" draggable="false" />
+        <div class="asleep-banner">Display asleep — tap to wake</div>
+      </div>
+      <div class="toolbar">
+        <button type="button" id="homepage">Home</button>
+        <button type="button" id="refresh">Refresh</button>
+      </div>
+      <div class="status" id="status"></div>
+      <div class="field-row">
+        <input id="type-text" type="text" placeholder="Insert text into focused field" autocomplete="off" autocapitalize="off" spellcheck="false" />
+        <button type="button" class="primary" id="send-text">Send</button>
+      </div>
+      <div class="field-row">
+        <input id="nav-url" type="url" placeholder="https://" />
+        <button type="button" id="nav-go">Open</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Links</h2>
+      <p class="muted">Shown on the kiosk home screen</p>
+      <div id="rows"></div>
+      <div class="actions">
+        <button type="button" id="edit-links">Edit</button>
+        <button type="button" id="add" hidden>Add link</button>
+        <button type="button" class="primary" id="save" hidden>Save</button>
+        <button type="button" id="cancel-links" hidden>Cancel</button>
+      </div>
+    </section>
+    </div>
+
+    <div class="panel" id="panel-audit" hidden>
+      <section>
+        <h2>Audit log</h2>
+        <p class="muted">Pages opened and blocked on the kiosk display</p>
+        <div class="audit-toolbar">
+          <label>
+            Show
+            <select id="audit-filter">
+              <option value="all">All</option>
+              <option value="blocked">Blocked only</option>
+              <option value="allowed">Allowed only</option>
+            </select>
+          </label>
+        </div>
+        <div class="audit-table-wrap">
+          <table class="audit">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Label</th>
+                <th>URL</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody id="audit-rows"></tbody>
+          </table>
+        </div>
+        <div class="pager">
+          <p class="muted" id="audit-meta"></p>
+          <div class="pager-actions">
+            <button type="button" id="audit-prev">Previous</button>
+            <button type="button" id="audit-next">Next</button>
+            <button type="button" id="audit-refresh">Refresh</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>
