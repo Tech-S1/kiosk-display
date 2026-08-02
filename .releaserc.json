@@ -13,14 +13,8 @@
       "@semantic-release/github",
       {
         "assets": [
-          {
-            "path": "dist/kiosk-display_*",
-            "label": "Binaries"
-          },
-          {
-            "path": "dist/SHA256SUMS",
-            "label": "Checksums"
-          }
+          "dist/kiosk-display_*",
+          "dist/SHA256SUMS"
         ]
       }
     ]
