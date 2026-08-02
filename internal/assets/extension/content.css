@@ -1,0 +1,268 @@
+:host {
+  all: initial;
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 2147483646 !important;
+  pointer-events: none !important;
+  font-family: system-ui, -apple-system, sans-serif !important;
+}
+
+:host *, * {
+  box-sizing: border-box !important;
+  cursor: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  user-select: none !important;
+}
+
+.kiosk-hud-panel {
+  pointer-events: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  padding: 16px 18px 18px !important;
+  border-radius: 22px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(18, 18, 20, 0.94) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.kiosk-hud-bar-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 0 2px !important;
+  color: #a1a1aa !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+}
+
+.kiosk-hud-bar-handle {
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  flex-shrink: 0 !important;
+}
+
+.kiosk-hud-bar-handle.h {
+  width: 44px !important;
+  height: 5px !important;
+  margin: 0 auto 2px !important;
+}
+
+.kiosk-hud-bar-handle.v {
+  width: 5px !important;
+  height: 44px !important;
+  margin: auto 2px !important;
+}
+
+.kiosk-hud-action {
+  appearance: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 68px !important;
+  padding: 0 28px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: #fafafa !important;
+  font-size: 20px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.02em !important;
+  white-space: nowrap !important;
+  touch-action: manipulation !important;
+  transition: background 120ms ease, transform 120ms ease !important;
+}
+
+.kiosk-hud-action:active {
+  transform: scale(0.97) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+#kiosk-hud-edge-bottom,
+#kiosk-hud-edge-right {
+  pointer-events: auto !important;
+  position: fixed !important;
+  background: transparent !important;
+  touch-action: none !important;
+  z-index: 2147483646 !important;
+}
+
+#kiosk-hud-edge-bottom {
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  height: 44px !important;
+}
+
+#kiosk-hud-edge-right {
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 36px !important;
+}
+
+.kiosk-hud-edge-grip {
+  position: absolute !important;
+  border-radius: 999px !important;
+  background: rgba(250, 250, 250, 0.88) !important;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.45),
+    0 2px 10px rgba(0, 0, 0, 0.35) !important;
+  opacity: 1 !important;
+  transition: opacity 200ms ease, transform 200ms ease !important;
+}
+
+.kiosk-hud-edge-grip.h {
+  left: 50% !important;
+  bottom: 14px !important;
+  width: 72px !important;
+  height: 6px !important;
+  margin-left: -36px !important;
+}
+
+.kiosk-hud-edge-grip.v {
+  right: 12px !important;
+  top: 50% !important;
+  width: 6px !important;
+  height: 72px !important;
+  margin-top: -36px !important;
+}
+
+:host(.links-open) .kiosk-hud-edge-grip.h,
+:host(.sleep-open) .kiosk-hud-edge-grip.v {
+  opacity: 0 !important;
+}
+
+#kiosk-hud-bar {
+  position: fixed !important;
+  left: 12px !important;
+  right: 12px !important;
+  bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
+  transform: translateY(calc(110% + 24px)) !important;
+  touch-action: pan-x !important;
+}
+
+:host(.links-open) #kiosk-hud-bar {
+  transform: translateY(0) !important;
+}
+
+#kiosk-hud-links {
+  display: flex !important;
+  gap: 12px !important;
+  align-items: center !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding-bottom: 2px !important;
+}
+
+#kiosk-hud-links::-webkit-scrollbar {
+  display: none !important;
+}
+
+#kiosk-hud-links a {
+  appearance: none !important;
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 68px !important;
+  padding: 0 28px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: #fafafa !important;
+  text-decoration: none !important;
+  font-size: 20px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.02em !important;
+  white-space: nowrap !important;
+  touch-action: manipulation !important;
+  transition: background 120ms ease, transform 120ms ease !important;
+}
+
+#kiosk-hud-links a:active {
+  transform: scale(0.97) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+#kiosk-hud-sleep-bar {
+  position: fixed !important;
+  top: max(12px, env(safe-area-inset-top, 12px)) !important;
+  right: max(12px, env(safe-area-inset-right, 12px)) !important;
+  bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+  width: min(168px, 28vw) !important;
+  padding: 18px 12px 18px 18px !important;
+  transform: translateX(calc(110% + 24px)) !important;
+  touch-action: pan-y !important;
+}
+
+:host(.sleep-open) #kiosk-hud-sleep-bar {
+  transform: translateX(0) !important;
+}
+
+#kiosk-hud-sleep-body {
+  display: flex !important;
+  flex: 1 !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+}
+
+.kiosk-hud-panel-side .kiosk-hud-bar-handle.v {
+  align-self: center !important;
+}
+
+#kiosk-hud-sleep-action {
+  width: 100% !important;
+}
+
+#kiosk-hud-denied {
+  pointer-events: none !important;
+  position: fixed !important;
+  left: 50% !important;
+  top: max(24px, env(safe-area-inset-top, 24px)) !important;
+  transform: translateX(-50%) !important;
+  z-index: 2147483647 !important;
+  min-width: 280px !important;
+  max-width: calc(100vw - 48px) !important;
+  padding: 18px 22px !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(18, 18, 20, 0.94) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
+  color: #fafafa !important;
+  font-size: 18px !important;
+  font-weight: 650 !important;
+  line-height: 1.3 !important;
+  opacity: 0 !important;
+  transition: opacity 200ms ease !important;
+}
+
+#kiosk-hud-denied.show {
+  opacity: 1 !important;
+}
+
+#kiosk-hud-denied-host {
+  margin-top: 6px !important;
+  color: #a1a1aa !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
