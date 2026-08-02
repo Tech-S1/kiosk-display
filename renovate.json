@@ -8,7 +8,8 @@
   "minimumReleaseAge": "7 days",
   "commitMessagePrefix": "Renovate: ",
   "assignees": ["Tech-S1"],
-  "schedule": ["at 7am every day"],
+  "timezone": "Europe/London",
+  "schedule": ["* 7 * * *"],
   "packageRules": [
     {
       "description": "Group GitHub Actions updates",

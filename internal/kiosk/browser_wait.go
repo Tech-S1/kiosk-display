@@ -37,7 +37,7 @@ func waitForURL(ctx context.Context, rawURL string, tlsCfg *tls.Config) error {
 		}
 		res, err := client.Do(req)
 		if err == nil {
-			res.Body.Close()
+			_ = res.Body.Close()
 			if res.StatusCode < 500 {
 				return nil
 			}

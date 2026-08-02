@@ -60,7 +60,7 @@ func (s *Store) load() error {
 		}
 		return err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	sc := bufio.NewScanner(f)
 	sc.Buffer(make([]byte, 0, 64*1024), 1024*1024)
@@ -177,7 +177,7 @@ func (s *Store) appendFile(e Entry) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	return writeEntry(f, e)
 }
 
@@ -189,7 +189,7 @@ func (s *Store) rewriteFile() error {
 	}
 	for _, e := range s.items {
 		if err := writeEntry(f, e); err != nil {
-			f.Close()
+			_ = f.Close()
 			_ = os.Remove(tmp)
 			return err
 		}

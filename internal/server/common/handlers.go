@@ -72,7 +72,7 @@ func RequireMethod(w http.ResponseWriter, r *http.Request, method string) bool {
 }
 
 func DecodeJSON(w http.ResponseWriter, r *http.Request, dst any) bool {
-	defer r.Body.Close()
+	defer func() { _ = r.Body.Close() }()
 	dec := json.NewDecoder(io.LimitReader(r.Body, maxJSONBody))
 	if err := dec.Decode(dst); err != nil {
 		ClientError(w, http.StatusBadRequest, "invalid json")

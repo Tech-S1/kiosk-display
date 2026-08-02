@@ -30,7 +30,7 @@ func serveRemoteStream(w http.ResponseWriter, r *http.Request, ctrl *kiosk.Contr
 	if err != nil {
 		return
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	client := ctrl.Hub.Subscribe()
 	defer ctrl.Hub.Unsubscribe(client)
