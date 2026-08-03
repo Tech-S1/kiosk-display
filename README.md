@@ -23,9 +23,11 @@ cp config.example.yaml ~/.config/kiosk-display/config.yaml
 kiosk-display -hash-password 'your-password'
 ```
 
-Put the printed argon2id hash into `manager.password_hash`, then:
+Export the printed argon2id hash (and OIDC secret if used), then start:
 
 ```bash
+export KIOSK_PASSWORD_HASH='...'          # optional if using OIDC only
+export KIOSK_OIDC_CLIENT_SECRET='...'     # optional if using password only
 kiosk-display -config ~/.config/kiosk-display/config.yaml
 ```
 
@@ -33,7 +35,7 @@ Default config path if `-config` is omitted: `~/.config/kiosk-display/config.yam
 
 Runtime data (TLS certs, Chrome profile, links store, audit log) lives under `~/.local/share/kiosk-display`.
 
-At least one of `manager.password_hash` or `manager.oidc` is required. Both can be enabled together.
+At least one of password auth (`KIOSK_PASSWORD_HASH` / `manager.password_hash`) or `manager.oidc` is required. Both can be enabled together. Env vars override YAML when set.
 
 ## Config
 
@@ -51,23 +53,23 @@ See `config.example.yaml`.
 
 ### Manager auth
 
-| Key                      | Purpose                                                                 |
-| ------------------------ | ----------------------------------------------------------------------- |
-| `password_hash`          | Argon2id hash for password login (optional if `oidc` is set)            |
-| `oidc`                   | OpenID Connect (OAuth 2.0) login via an IdP such as Authelia            |
+| Key / env                    | Purpose                                                      |
+| ---------------------------- | ------------------------------------------------------------ |
+| `password_hash` / `KIOSK_PASSWORD_HASH` | Argon2id hash for password login (optional if `oidc` is set) |
+| `oidc`                       | OpenID Connect (OAuth 2.0) login via an IdP such as Authelia |
 
 #### `manager.oidc`
 
-| Key                        | Purpose                                                                                          |
-| -------------------------- | ------------------------------------------------------------------------------------------------ |
-| `issuer`                   | IdP issuer URL (discovery at `{issuer}/.well-known/openid-configuration`)                        |
-| `client_id`                | OIDC client ID                                                                                   |
-| `client_secret`            | OIDC client secret                                                                               |
-| `redirect_url`             | Callback URL (`…/api/oidc/callback`); must match the IdP client registration                     |
-| `post_logout_redirect_url` | Where to land after IdP logout (optional; defaults to origin of `redirect_url`)                  |
-| `scopes`                   | Scopes to request (default `openid profile email`; `groups` added if `required_groups` is set)   |
-| `required_groups`          | If set, ID token must include at least one of these groups                                       |
-| `auto_redirect`            | When true, unauthenticated visits go straight to the IdP                                         |
+| Key / env                              | Purpose                                                                                        |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `issuer`                               | IdP issuer URL (discovery at `{issuer}/.well-known/openid-configuration`)                      |
+| `client_id`                            | OIDC client ID                                                                                 |
+| `client_secret` / `KIOSK_OIDC_CLIENT_SECRET` | OIDC client secret                                                                       |
+| `redirect_url`                         | Callback URL (`…/api/oidc/callback`); must match the IdP client registration                   |
+| `post_logout_redirect_url`             | Where to land after IdP logout (optional; defaults to origin of `redirect_url`)                |
+| `scopes`                               | Scopes to request (default `openid profile email`; `groups` added if `required_groups` is set) |
+| `required_groups`                      | If set, ID token must include at least one of these groups                                     |
+| `auto_redirect`                        | When true, unauthenticated visits go straight to the IdP                                       |
 
 Logout uses `end_session_endpoint` from discovery when present; otherwise falls back to `{issuer}/logout?rd=…` (Authelia portal logout).
 

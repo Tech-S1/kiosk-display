@@ -19,7 +19,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const displayLoopback = "127.0.0.1"
+const (
+	displayLoopback = "127.0.0.1"
+
+	envPasswordHash     = "KIOSK_PASSWORD_HASH"
+	envOIDCClientSecret = "KIOSK_OIDC_CLIENT_SECRET"
+)
 
 var (
 	C    Config
@@ -46,7 +51,7 @@ type Display struct {
 type OIDC struct {
 	Issuer                string   `yaml:"issuer" mod:"trim" validate:"required,http_url"`
 	ClientID              string   `yaml:"client_id" mod:"trim" validate:"required"`
-	ClientSecret          string   `yaml:"client_secret" mod:"trim" validate:"required"`
+	ClientSecret          string   `yaml:"client_secret" mod:"trim"`
 	RedirectURL           string   `yaml:"redirect_url" mod:"trim" validate:"required,http_url"`
 	PostLogoutRedirectURL string   `yaml:"post_logout_redirect_url" mod:"trim" validate:"omitempty,http_url"`
 	Scopes                []string `yaml:"scopes" mod:"dive,trim"`
@@ -136,6 +141,7 @@ func Load() error {
 	if err := yaml.Unmarshal(b, &C); err != nil {
 		return err
 	}
+	applyEnvSecrets()
 	if err := conform.Struct(context.Background(), &C); err != nil {
 		return err
 	}
@@ -149,11 +155,23 @@ func Load() error {
 	return nil
 }
 
+func applyEnvSecrets() {
+	if v := strings.TrimSpace(os.Getenv(envPasswordHash)); v != "" {
+		C.Manager.PasswordHash = v
+	}
+	if C.Manager.OIDC == nil {
+		return
+	}
+	if v := strings.TrimSpace(os.Getenv(envOIDCClientSecret)); v != "" {
+		C.Manager.OIDC.ClientSecret = v
+	}
+}
+
 func validateManagerAuth() error {
 	hasPassword := strings.TrimSpace(C.Manager.PasswordHash) != ""
 	hasOIDC := C.Manager.OIDC != nil
 	if !hasPassword && !hasOIDC {
-		return fmt.Errorf("manager: set password_hash and/or oidc")
+		return fmt.Errorf("manager: set password_hash / %s and/or oidc", envPasswordHash)
 	}
 	if hasPassword {
 		if err := authpass.Validate(C.Manager.PasswordHash); err != nil {
@@ -163,6 +181,9 @@ func validateManagerAuth() error {
 	if hasOIDC {
 		if err := validate.Struct(C.Manager.OIDC); err != nil {
 			return fmt.Errorf("manager.oidc: %w", err)
+		}
+		if strings.TrimSpace(C.Manager.OIDC.ClientSecret) == "" {
+			return fmt.Errorf("manager.oidc.client_secret: set in config or %s", envOIDCClientSecret)
 		}
 		if !strings.HasPrefix(strings.ToLower(C.Manager.OIDC.RedirectURL), "https://") {
 			return fmt.Errorf("manager.oidc.redirect_url: must be https")
