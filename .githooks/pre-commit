@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+need() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "pre-commit: missing $1 (install it or skip with --no-verify)" >&2
+    exit 1
+  fi
+}
+
+need golangci-lint
+need govulncheck
+
+echo "pre-commit: golangci-lint"
+golangci-lint run ./...
+
+echo "pre-commit: govulncheck"
+govulncheck ./...
