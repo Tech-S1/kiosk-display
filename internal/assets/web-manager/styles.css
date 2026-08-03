@@ -305,3 +305,14 @@ table.audit tr.blocked td.label {
 #login .field-row {
   margin-top: 16px;
 }
+#login-oidc-form {
+  margin-top: 16px;
+}
+#login-oidc-form.with-divider {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+#login-oidc-form button {
+  width: 100%;
+}

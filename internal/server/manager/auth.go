@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
@@ -21,13 +22,18 @@ const (
 	csrfHeader    = "X-CSRF-Token"
 	sessionIdle   = 12 * time.Hour
 	sessionMaxAge = 24 * time.Hour
+
+	authMethodPassword = "password"
+	authMethodOIDC     = "oidc"
 )
 
 type session struct {
 	created time.Time
 	expiry  time.Time
 	csrf    string
+	method  string
 	pwdVer  string
+	idToken string
 }
 
 type sessionStore struct {
@@ -52,7 +58,7 @@ func newCSRF() (string, error) {
 	return hex.EncodeToString(b), nil
 }
 
-func (s *sessionStore) create() (id, csrf string, err error) {
+func (s *sessionStore) create(method, idToken string) (id, csrf string, err error) {
 	b := make([]byte, 32)
 	if _, err = rand.Read(b); err != nil {
 		return "", "", err
@@ -63,13 +69,19 @@ func (s *sessionStore) create() (id, csrf string, err error) {
 	}
 	id = hex.EncodeToString(b)
 	now := time.Now()
+	pwdVer := ""
+	if method == authMethodPassword {
+		pwdVer = passwordVersion()
+	}
 	s.mu.Lock()
 	s.sessions = map[string]session{
 		id: {
 			created: now,
 			expiry:  now.Add(sessionIdle),
 			csrf:    csrf,
-			pwdVer:  passwordVersion(),
+			method:  method,
+			pwdVer:  pwdVer,
+			idToken: idToken,
 		},
 	}
 	s.mu.Unlock()
@@ -88,7 +100,11 @@ func (s *sessionStore) valid(id string) (session, bool) {
 		return session{}, false
 	}
 	now := time.Now()
-	if now.After(sess.created.Add(sessionMaxAge)) || now.After(sess.expiry) || sess.pwdVer != passwordVersion() {
+	if now.After(sess.created.Add(sessionMaxAge)) || now.After(sess.expiry) {
+		delete(s.sessions, id)
+		return session{}, false
+	}
+	if sess.method == authMethodPassword && sess.pwdVer != passwordVersion() {
 		delete(s.sessions, id)
 		return session{}, false
 	}
@@ -97,10 +113,19 @@ func (s *sessionStore) valid(id string) (session, bool) {
 	return sess, true
 }
 
-func (s *sessionStore) revoke(id string) {
+func (s *sessionStore) take(id string) (session, bool) {
+	id = strings.TrimSpace(id)
+	if id == "" {
+		return session{}, false
+	}
 	s.mu.Lock()
+	defer s.mu.Unlock()
+	sess, ok := s.sessions[id]
+	if !ok {
+		return session{}, false
+	}
 	delete(s.sessions, id)
-	s.mu.Unlock()
+	return sess, true
 }
 
 func csrfMatch(got, want string) bool {
@@ -132,10 +157,14 @@ func clearSessionCookie(w http.ResponseWriter) {
 	http.SetCookie(w, sessionCookieValue("", -1))
 }
 
-func registerAuth(mux *http.ServeMux, store *sessionStore) {
+func registerAuth(mux *http.ServeMux, store *sessionStore, oidc *oidcAuth) {
 	limiter := newLoginLimiter()
 	mux.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
 		if !common.RequireMethod(w, r, http.MethodPost) {
+			return
+		}
+		if !passwordEnabled() {
+			common.ClientError(w, http.StatusBadRequest, "password login disabled")
 			return
 		}
 		ip := clientIP(r)
@@ -155,7 +184,7 @@ func registerAuth(mux *http.ServeMux, store *sessionStore) {
 			return
 		}
 		limiter.success(ip)
-		id, csrf, err := store.create()
+		id, csrf, err := store.create(authMethodPassword, "")
 		if err != nil {
 			common.InternalError(w, err)
 			return
@@ -168,18 +197,28 @@ func registerAuth(mux *http.ServeMux, store *sessionStore) {
 		if !common.RequireMethod(w, r, http.MethodPost) {
 			return
 		}
+		out := map[string]string{"status": "ok"}
 		if c, err := r.Cookie(sessionCookie); err == nil {
-			store.revoke(c.Value)
+			if sess, ok := store.take(c.Value); ok && sess.method == authMethodOIDC && oidc != nil {
+				if u := oidc.logoutURL(sess.idToken); u != "" {
+					out["logout_url"] = u
+				}
+			}
 		}
 		clearSessionCookie(w)
-		common.WriteJSON(w, map[string]string{"status": "ok"})
+		common.WriteJSON(w, out)
 	})
 
 	mux.HandleFunc("/api/auth", func(w http.ResponseWriter, r *http.Request) {
 		if !common.RequireMethod(w, r, http.MethodGet) {
 			return
 		}
-		out := map[string]any{"ok": false}
+		out := map[string]any{
+			"ok":            false,
+			"password":      passwordEnabled(),
+			"oidc":          oidc != nil,
+			"auto_redirect": oidc != nil && config.C.Manager.OIDC != nil && config.C.Manager.OIDC.AutoRedirect,
+		}
 		if c, err := r.Cookie(sessionCookie); err == nil {
 			if sess, ok := store.valid(c.Value); ok {
 				out["ok"] = true
@@ -188,14 +227,23 @@ func registerAuth(mux *http.ServeMux, store *sessionStore) {
 		}
 		common.WriteJSON(w, out)
 	})
+
+	if oidc != nil {
+		mux.HandleFunc("/api/oidc/login", oidc.beginLogin)
+		mux.HandleFunc("/api/oidc/callback", func(w http.ResponseWriter, r *http.Request) {
+			oidc.handleCallback(store, w, r)
+		})
+	}
 }
 
 func requireAuth(store *sessionStore, next http.Handler) http.Handler {
 	public := map[string]bool{
-		"/api/health": true,
-		"/api/login":  true,
-		"/api/logout": true,
-		"/api/auth":   true,
+		"/api/health":        true,
+		"/api/login":         true,
+		"/api/logout":        true,
+		"/api/auth":          true,
+		"/api/oidc/login":    true,
+		"/api/oidc/callback": true,
 	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if public[r.URL.Path] || !strings.HasPrefix(r.URL.Path, "/api/") {
@@ -273,4 +321,11 @@ func (l *loginLimiter) success(ip string) {
 	l.mu.Lock()
 	delete(l.fails, ip)
 	l.mu.Unlock()
+}
+
+func initOIDC(ctx context.Context) (*oidcAuth, error) {
+	if !oidcEnabled() {
+		return nil, nil
+	}
+	return newOIDCAuth(ctx, *config.C.Manager.OIDC)
 }

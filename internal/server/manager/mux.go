@@ -26,7 +26,11 @@ var configKeys = []string{"width", "height", "allow_edit_links"}
 func NewMux(opts Options) (http.Handler, error) {
 	mux := http.NewServeMux()
 	sessions := newSessionStore()
-	registerAuth(mux, sessions)
+	oidc, err := initOIDC(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	registerAuth(mux, sessions, oidc)
 	common.RegisterHealth(mux)
 	if err := common.RegisterConfig(mux, configKeys...); err != nil {
 		return nil, err

@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/mold/v4/modifiers"
@@ -42,11 +43,27 @@ type Display struct {
 	Wake  [][]string `yaml:"wake" validate:"dive,min=1"`
 }
 
+type OIDC struct {
+	Issuer                string   `yaml:"issuer" mod:"trim" validate:"required,http_url"`
+	ClientID              string   `yaml:"client_id" mod:"trim" validate:"required"`
+	ClientSecret          string   `yaml:"client_secret" mod:"trim" validate:"required"`
+	RedirectURL           string   `yaml:"redirect_url" mod:"trim" validate:"required,http_url"`
+	PostLogoutRedirectURL string   `yaml:"post_logout_redirect_url" mod:"trim" validate:"omitempty,http_url"`
+	Scopes                []string `yaml:"scopes" mod:"dive,trim"`
+	RequiredGroups        []string `yaml:"required_groups" mod:"dive,trim"`
+	AutoRedirect          bool     `yaml:"auto_redirect"`
+}
+
+func (o OIDC) Enabled() bool {
+	return o.Issuer != "" && o.ClientID != "" && o.ClientSecret != "" && o.RedirectURL != ""
+}
+
 type Manager struct {
 	Bind         string `yaml:"bind" mod:"trim,default=0.0.0.0"`
 	Host         string `yaml:"host" mod:"trim,default=127.0.0.1"`
 	Port         int    `yaml:"port" validate:"gte=1,lte=65535"`
-	PasswordHash string `yaml:"password_hash" mod:"trim" validate:"required"`
+	PasswordHash string `yaml:"password_hash" mod:"trim"`
+	OIDC         *OIDC  `yaml:"oidc"`
 }
 
 type Link struct {
@@ -125,9 +142,31 @@ func Load() error {
 	if err := validate.Struct(C); err != nil {
 		return err
 	}
-	if err := authpass.Validate(C.Manager.PasswordHash); err != nil {
-		return fmt.Errorf("manager.password_hash: %w", err)
+	if err := validateManagerAuth(); err != nil {
+		return err
 	}
 	_ = os.Chmod(Path, 0o600)
+	return nil
+}
+
+func validateManagerAuth() error {
+	hasPassword := strings.TrimSpace(C.Manager.PasswordHash) != ""
+	hasOIDC := C.Manager.OIDC != nil
+	if !hasPassword && !hasOIDC {
+		return fmt.Errorf("manager: set password_hash and/or oidc")
+	}
+	if hasPassword {
+		if err := authpass.Validate(C.Manager.PasswordHash); err != nil {
+			return fmt.Errorf("manager.password_hash: %w", err)
+		}
+	}
+	if hasOIDC {
+		if err := validate.Struct(C.Manager.OIDC); err != nil {
+			return fmt.Errorf("manager.oidc: %w", err)
+		}
+		if !strings.HasPrefix(strings.ToLower(C.Manager.OIDC.RedirectURL), "https://") {
+			return fmt.Errorf("manager.oidc.redirect_url: must be https")
+		}
+	}
 	return nil
 }

@@ -10,9 +10,14 @@
   <div id="login" hidden>
     <h1>Kiosk Display Manager</h1>
     <p class="muted">Sign in to continue</p>
-    <div class="field-row">
-      <input id="login-password" type="password" placeholder="Password" autocomplete="current-password" />
-      <button type="button" class="primary" id="login-submit">Sign in</button>
+    <div id="login-password-form" hidden>
+      <div class="field-row">
+        <input id="login-password" type="password" placeholder="Password" autocomplete="current-password" />
+        <button type="button" class="primary" id="login-submit">Sign in</button>
+      </div>
+    </div>
+    <div id="login-oidc-form" hidden>
+      <button type="button" class="primary" id="login-oidc">Sign in with SSO</button>
     </div>
     <div class="status" id="login-status"></div>
   </div>
