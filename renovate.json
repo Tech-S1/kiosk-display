@@ -23,6 +23,12 @@
       "groupName": "go-modules"
     },
     {
+      "matchManagers": ["gomod"],
+      "matchDepNames": ["go"],
+      "matchDepTypes": ["golang"],
+      "rangeStrategy": "bump"
+    },
+    {
       "description": "Group semantic-release npm updates",
       "matchDatasources": ["npm"],
       "matchPackageNames": [
