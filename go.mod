@@ -3,7 +3,7 @@ module github.com/Tech-S1/kiosk-display
 go 1.26.6
 
 require (
-	github.com/chromedp/cdproto v0.0.0-20260714215040-dc233986426f
+	github.com/chromedp/cdproto v0.0.0-20260804232424-e85f50dbfd32
 	github.com/chromedp/chromedp v0.16.0
 	github.com/coreos/go-oidc/v3 v3.20.0
 	github.com/go-playground/mold/v4 v4.5.1
