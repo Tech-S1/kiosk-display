@@ -5,12 +5,18 @@
     "helpers:pinGitHubActionDigests"
   ],
   "labels": ["dependencies"],
-  "minimumReleaseAge": "7 days",
+  "minimumReleaseAge": "3 days",
+  "osvVulnerabilityAlerts": true,
   "commitMessagePrefix": "Renovate: ",
   "assignees": ["Tech-S1"],
   "timezone": "Europe/London",
   "schedule": ["* 7 * * *"],
   "packageRules": [
+    {
+      "description": "Ship known CVE fixes immediately",
+      "matchVulnerabilityAlerts": true,
+      "minimumReleaseAge": null
+    },
     {
       "description": "Group GitHub Actions updates",
       "matchManagers": ["github-actions"],
