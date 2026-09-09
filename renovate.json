@@ -7,16 +7,14 @@
   "labels": ["dependencies"],
   "minimumReleaseAge": "3 days",
   "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "minimumReleaseAge": null
+  },
   "commitMessagePrefix": "Renovate: ",
   "assignees": ["Tech-S1"],
   "timezone": "Europe/London",
   "schedule": ["* 7 * * *"],
   "packageRules": [
-    {
-      "description": "Ship known CVE fixes immediately",
-      "matchVulnerabilityAlerts": true,
-      "minimumReleaseAge": null
-    },
     {
       "description": "Group GitHub Actions updates",
       "matchManagers": ["github-actions"],
