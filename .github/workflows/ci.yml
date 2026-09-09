@@ -5,17 +5,11 @@ on:
     branches: [main]
     paths-ignore:
       - "README.md"
-      - "**/README.md"
-      - ".github/renovate.json"
       - "renovate.json"
-      - "renovate.json5"
   pull_request:
     paths-ignore:
       - "README.md"
-      - "**/README.md"
-      - ".github/renovate.json"
       - "renovate.json"
-      - "renovate.json5"
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
