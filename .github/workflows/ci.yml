@@ -3,7 +3,13 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "README.md"
+      - "renovate.json"
   pull_request:
+    paths-ignore:
+      - "README.md"
+      - "renovate.json"
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
