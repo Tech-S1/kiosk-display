@@ -16,7 +16,7 @@ permissions:
 jobs:
   release:
     if: github.event.workflow_run.conclusion == 'success'
-    uses: Tech-S1/ci-templates/.github/workflows/go-release.yml@main
+    uses: Tech-S1/ci-templates/.github/workflows/go-release.yml@6c3ef4fdae983ba63dee2446d0f9435bbbd69d82 # main
     with:
       ref: ${{ github.event.workflow_run.head_sha }}
     permissions:
