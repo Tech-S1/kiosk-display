@@ -1,76 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
-    "helpers:pinGitHubActionDigests"
-  ],
-  "labels": ["dependencies"],
-  "minimumReleaseAge": "3 days",
-  "osvVulnerabilityAlerts": true,
-  "vulnerabilityAlerts": {
-    "minimumReleaseAge": null
-  },
-  "commitMessagePrefix": "Renovate: ",
-  "assignees": ["Tech-S1"],
-  "timezone": "Europe/London",
-  "schedule": ["* 7 * * *"],
-  "packageRules": [
-    {
-      "description": "Group GitHub Actions updates",
-      "matchManagers": ["github-actions"],
-      "groupName": "github-actions"
-    },
-    {
-      "description": "Group Go module updates",
-      "matchManagers": ["gomod"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "go-modules"
-    },
-    {
-      "matchManagers": ["gomod"],
-      "matchDepNames": ["go"],
-      "matchDepTypes": ["golang"],
-      "rangeStrategy": "bump"
-    },
-    {
-      "description": "Group semantic-release npm updates",
-      "matchDatasources": ["npm"],
-      "matchPackageNames": [
-        "semantic-release",
-        "@semantic-release/commit-analyzer",
-        "@semantic-release/release-notes-generator",
-        "@semantic-release/exec",
-        "@semantic-release/github"
-      ],
-      "groupName": "semantic-release"
-    }
-  ],
-  "customManagers": [
-    {
-      "customType": "regex",
-      "managerFilePatterns": ["/^\\.github/workflows/.*\\.ya?ml$/"],
-      "matchStrings": [
-        "uses: golangci/golangci-lint-action[^\\n]+\\n\\s+with:\\n\\s+version:\\s*(?<currentValue>v?\\d+\\.\\d+\\.\\d+)"
-      ],
-      "depNameTemplate": "golangci/golangci-lint",
-      "datasourceTemplate": "github-releases"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": ["/^\\.github/workflows/.*\\.ya?ml$/"],
-      "matchStrings": [
-        "go install golang\\.org/x/vuln/cmd/govulncheck@(?<currentValue>v?[\\d.]+)"
-      ],
-      "depNameTemplate": "golang.org/x/vuln",
-      "datasourceTemplate": "go"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": ["/^\\.github/workflows/.*\\.ya?ml$/"],
-      "matchStrings": [
-        "(?:^|\\s)(?<depName>(?:@[\\w.-]+/)?[\\w.-]+)@(?<currentValue>\\d+\\.\\d+\\.\\d+)"
-      ],
-      "datasourceTemplate": "npm"
-    }
+    "github>Tech-S1/ci-templates#v0.2.0",
+    "github>Tech-S1/ci-templates:go#v0.2.0"
   ]
 }
