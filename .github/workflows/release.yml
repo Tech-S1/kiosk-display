@@ -19,6 +19,9 @@ jobs:
     uses: Tech-S1/ci-templates/.github/workflows/go-release.yml@v0.2.0
     with:
       ref: ${{ github.event.workflow_run.head_sha }}
+      binary-package: ./cmd/kiosk-display
+      binary-name: kiosk-display
+      ldflags-package: github.com/Tech-S1/kiosk-display/internal/buildinfo
     permissions:
       contents: write
       issues: write

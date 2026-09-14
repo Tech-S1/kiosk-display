@@ -1,7 +1,7 @@
 .PHONY: build build-linux release lint vuln check
 
 VERSION ?= dev
-LDFLAGS := -s -w -X github.com/Tech-S1/kiosk-display/internal/buildinfo.Version=$(VERSION)
+LDFLAGS := -s -w -X github.com/Tech-S1/kiosk-display/internal/buildinfo.version=$(VERSION)
 BIN := ./cmd/kiosk-display
 
 build:

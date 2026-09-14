@@ -89,7 +89,7 @@ func patchManifest(b []byte, displayAPI string) ([]byte, bool) {
 		return nil, false
 	}
 	manifest["host_permissions"] = displayAPIHostPerms(displayAPI)
-	manifest["version"] = chromeExtensionVersion(buildinfo.Version)
+	manifest["version"] = chromeExtensionVersion(buildinfo.Version())
 	out, err := json.MarshalIndent(manifest, "", "  ")
 	if err != nil {
 		return nil, false

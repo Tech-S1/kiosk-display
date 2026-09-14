@@ -3,20 +3,6 @@
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
-    [
-      "@semantic-release/exec",
-      {
-        "prepareCmd": "make release VERSION=${nextRelease.version}"
-      }
-    ],
-    [
-      "@semantic-release/github",
-      {
-        "assets": [
-          "dist/kiosk-display_*",
-          "dist/SHA256SUMS"
-        ]
-      }
-    ]
+    "@semantic-release/github"
   ]
 }
