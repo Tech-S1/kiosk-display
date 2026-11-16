@@ -1,4 +1,4 @@
-.PHONY: build build-linux release lint vuln check
+.PHONY: build build-linux release lint vuln check clean
 
 VERSION ?= dev
 LDFLAGS := -s -w -X github.com/Tech-S1/kiosk-display/internal/buildinfo.version=$(VERSION)
@@ -25,3 +25,6 @@ vuln:
 	govulncheck ./...
 
 check: lint vuln
+
+clean:
+	rm -rf bin dist
