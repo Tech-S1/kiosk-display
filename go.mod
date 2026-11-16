@@ -1,6 +1,6 @@
 module github.com/Tech-S1/kiosk-display
 
-go 1.27.1
+go 1.27.4
 
 require (
 	github.com/chromedp/cdproto v0.0.0-20260804232424-e85f50dbfd32
