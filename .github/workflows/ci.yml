@@ -20,6 +20,6 @@ permissions:
 
 jobs:
   go:
-    uses: Tech-S1/ci-templates/.github/workflows/go-ci.yml@cf096b99abadb36856ee1bbb863b9a62c5592c6b # v0.3.3
+    uses: Tech-S1/ci-templates/.github/workflows/go-ci.yml@7d66236ed7de4e90cc6a8b7af02c108917fbeeca # v0.3.4
     with:
       build-packages: ./cmd/kiosk-display

@@ -16,7 +16,7 @@ permissions:
 jobs:
   release:
     if: github.event.workflow_run.conclusion == 'success'
-    uses: Tech-S1/ci-templates/.github/workflows/go-release.yml@cf096b99abadb36856ee1bbb863b9a62c5592c6b # v0.3.3
+    uses: Tech-S1/ci-templates/.github/workflows/go-release.yml@7d66236ed7de4e90cc6a8b7af02c108917fbeeca # v0.3.4
     with:
       ref: ${{ github.event.workflow_run.head_sha }}
       binary-package: ./cmd/kiosk-display
